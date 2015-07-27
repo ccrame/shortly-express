@@ -91,14 +91,14 @@ app.post('/login', function(req, res){
   //Do something with req
   console.log('POST called');
   //Send em to index
-  res.render('index');
+  res.redirect('index');
 });
 
 app.post('/signup', function(req, res){
   //Do something with req
   console.log('POST called');
   //Send em to index
-  res.render('index');
+  res.redirect('index');
 });
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
