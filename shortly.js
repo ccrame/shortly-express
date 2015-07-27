@@ -1,3 +1,4 @@
+
 var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
@@ -25,6 +26,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', 
 function(req, res) {
+  //TO-DO: Change this to signup
   res.render('index');
 });
 
@@ -77,9 +79,27 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/login', function(req, res){
+  res.render('login');
+});
 
+app.get('/signup', function(req, res){
+  res.render('signup');
+});
 
+app.post('/login', function(req, res){
+  //Do something with req
+  console.log('POST called');
+  //Send em to index
+  res.render('index');
+});
 
+app.post('/signup', function(req, res){
+  //Do something with req
+  console.log('POST called');
+  //Send em to index
+  res.render('index');
+});
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
