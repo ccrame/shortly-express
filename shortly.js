@@ -96,7 +96,7 @@ app.post('/login', function(req, res){
 
 app.post('/signup', function(req, res){
   //Do something with req
-  console.log('POST called', req.body);
+  // console.log('POST called', req.body);
   //If username and password are valid inputs i.e. username doesn't already exist
   var user = new User(req.body);
 

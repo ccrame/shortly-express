@@ -12,11 +12,11 @@ var User = db.Model.extend({
   // On initialize
     // Hash the password input and store it in db (on Model as well?)
   initialize: function(){
-    console.log('User created', this.username, this.password);
-    this.on('creating', function(model, attrs, options){
-      bcrypt.hash(model.get('password'),'salt', function(err, hash){
-        model.set('password', hash);
-      });
+    //console.log('User created', this.username, this.attributes.password);
+    var context = this;
+    bcrypt.hash(this.get('password'), null, null, function(err, hash) {
+      // console.log('Current context of model is: ', );
+      context.set('password',hash);
     });
   }
 });
