@@ -96,8 +96,16 @@ app.post('/login', function(req, res){
 
 app.post('/signup', function(req, res){
   //Do something with req
-  console.log('POST called');
+  console.log('POST called', req.body);
+  //If username and password are valid inputs i.e. username doesn't already exist
+  var user = new User(req.body);
+
+  user.save().then(function(newUser){
+    Users.add(newUser);
+    res.send(200, newUser);
+  });
   //Send em to index
+  //TO-DO: Log them in 
   res.redirect('index');
 });
 /************************************************************/
