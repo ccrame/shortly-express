@@ -14,8 +14,9 @@ var Click = require('./app/models/click');
 
 var app = express();
 
-//Require express session 
+//Require express session and bcrypt
 var session = require('express-session');
+var bcrypt = require('bcrypt-nodejs');
 //var KnexSessionStore = require('connect-session-knex')(session);
 app.use(session({
   secret: 'adflkjqowien1o912098aksnkj189as0d',
@@ -33,18 +34,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
-function(req, res) {
+app.get('/', util.checkUser, function(req, res) {
   res.render('index');
 });
 
-app.get('/create',
-function(req, res) {
+app.get('/create', util.checkUser, function(req, res) {
   res.render('index');
 });
 
-app.get('/links',
-function(req, res) {
+app.get('/links', util.checkUser, function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
@@ -97,13 +95,25 @@ app.get('/signup', function(req, res){
 
 app.post('/login', function(req, res){
   //Take request and get the username and pw
-    //Search the db for matching username
-      //If found use bcrypt on the entered pw to check if it is the same as the stored one
-        //If true begin session > redirect > index 
-        //If false, redirect > login
-  console.log('POST called');
-  //Send em to index
-  res.redirect('index');
+  var username = req.body.username;
+  var password = req.body.password;
+  //Search the db for matching username
+  new User({username: username}).fetch({require: true})
+    .then(function(model){
+      if(!model){
+        res.redirect('login');
+      }
+    //If found use bcrypt on the entered pw to check if it is the same as the stored one
+      bcrypt.compare(password, model.get('password'), function(err, result){
+        if(result){
+          //If true begin session > redirect > index 
+          util.createSession(req, res, username);
+        } else {
+          //If false, redirect > login
+          res.redirect('login');
+        }
+      })
+  })
 });
 
 app.post('/signup', function(req, res){
@@ -118,11 +128,16 @@ app.post('/signup', function(req, res){
   });
   //Send em to index
   //TO-DO: Log them in 
-  res.redirect('index');
+  res.redirect('/');
 });
 
 //TO-DO: Add log out route handling 
-
+app.get('/logout', function(req, res){
+  req.session.destroy(function(err){
+    if(err){ console.log('logout error!');}
+    res.redirect('login');
+  });
+});
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
