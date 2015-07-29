@@ -14,6 +14,15 @@ var Click = require('./app/models/click');
 
 var app = express();
 
+//Require express session 
+var session = require('express-session');
+//var KnexSessionStore = require('connect-session-knex')(session);
+app.use(session({
+  secret: 'adflkjqowien1o912098aksnkj189as0d',
+  resave: false,
+  saveUninitialized: true
+}));
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(partials());
@@ -26,16 +35,15 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', 
 function(req, res) {
-  //TO-DO: Change this to signup
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
@@ -88,7 +96,11 @@ app.get('/signup', function(req, res){
 });
 
 app.post('/login', function(req, res){
-  //Do something with req
+  //Take request and get the username and pw
+    //Search the db for matching username
+      //If found use bcrypt on the entered pw to check if it is the same as the stored one
+        //If true begin session > redirect > index 
+        //If false, redirect > login
   console.log('POST called');
   //Send em to index
   res.redirect('index');
@@ -108,6 +120,9 @@ app.post('/signup', function(req, res){
   //TO-DO: Log them in 
   res.redirect('index');
 });
+
+//TO-DO: Add log out route handling 
+
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
